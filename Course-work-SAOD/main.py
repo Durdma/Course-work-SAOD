@@ -1,11 +1,43 @@
 import interface as gui
 import check_funcs as check
-
+import hash_table_of_visitors as ht
+import Visitor as vs
 
 from os import system
 
 
+def new_visitor(visitor_base):
+    gui.AddNewVisitor.name_menu()
+    tmp = vs.Visitor()
+
+    tmp.passport = check.field_passport(input("Введите номер паспорта в формате NNNN-NNNNNN,"
+                                              "где N - цифра: "))
+
+    tmp.full_name = check.field_full_name(input("Введите полное ФИО: "))
+
+    tmp.date_born = check.field_date_born(input("Введите год рождения"
+                                                "Формат ввода: ДД/ММ/ГГГГ: "))
+
+    tmp.address = check.field_address(input("Введите адрес проживания: "))
+
+    tmp.goal = check.field_goal(input("Введите цель поездки: "))
+
+    res = visitor_base.add_record(tmp)
+
+    if res is True:
+        print("Запись о новом постояльце успешно добавлена!")
+        return
+    elif res == tmp.passport:
+        print("Запись с таким паспортным номером уже существует!")
+        return
+
+    print("Запись о новом пользователе не добавлена! Таблица заполнена!")
+    return
+
+
 def main():
+    visitor_base = ht.HashTable()
+
     len_of_options = None
 
     while True:
@@ -18,7 +50,7 @@ def main():
 
             option = input("Введите номер действия: ")
 
-            option, fl = check.check_choice(option, len_of_options)
+            option, fl = check.choice(option, len_of_options)
 
             if fl is False:
                 input('Нажмите "Enter", чтобы повторить ввод!')
@@ -27,15 +59,19 @@ def main():
         if option == 0:
             break
         elif option == 1:
-            pass
+            new_visitor(visitor_base)
+            input("OK")
         elif option == 2:
             pass
         elif option == 3:
-            pass
+            visitor_base.show_records()
+            input("OK")
         elif option == 4:
-            pass
+            visitor_base.empty_table()
+            input("OK")
+
         elif option == 5:
-            pass
+            tmp = visitor_base.get_visitor()
         elif option == 6:
             pass
         elif option == 7:

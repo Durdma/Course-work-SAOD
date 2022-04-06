@@ -8,5 +8,4 @@ class Visitor:
     date_born: str = ""
     address: str = ""
     goal: str = ""
-    room: int = None
 
