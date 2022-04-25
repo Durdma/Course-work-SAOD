@@ -1,5 +1,6 @@
-import Visitor
+from typing import Callable, Iterator, Union, Optional, List
 
+import Visitor as vs
 
 class Singleton(type):
     _instances = {}
@@ -14,15 +15,16 @@ class Singleton(type):
 class HashTable(metaclass=Singleton):
 
     def __init__(self):
-        self.table = [Visitor.Visitor()] * 2000
+        self.table = [vs.Visitor()] * 2000
 
+    # Хэш функция №1
     @staticmethod
     def __hash_func_first(passport: str) -> int:
         coefficients = (11, 13, 17, 19, 23, 29, 31, 37, 41, 43)
 
         result = 0
 
-        def _get_code():
+        def _get_code() -> List[int]:
             # NNNN - NNNNNN code of numbers in [48:58]
             to_key = list()
 
@@ -41,7 +43,8 @@ class HashTable(metaclass=Singleton):
 
         return result % 2000
 
-    def __hash_func_second(self, hashfunc: int):
+    # Хэш функция №2
+    def __hash_func_second(self, hashfunc: int) -> Union[False, int]:
         i = 1
 
         while hashfunc <= len(self.table):
@@ -55,11 +58,13 @@ class HashTable(metaclass=Singleton):
 
         return False
 
-    def empty_table(self):
-        self.table = [Visitor.Visitor()] * 2000
+    # Очистка хэш-таблицы
+    def empty_table(self) -> None:
+        self.table = [vs.Visitor()] * 2000
         print("База постояльцев очищена!")
 
-    def add_record(self, visitor: Visitor) -> bool:
+    # Добавление записи в хэш-таблицу
+    def add_record(self, visitor: vs.Visitor) -> bool:
         if self.__find_record(visitor.passport) is not False:
             return visitor.passport
 
@@ -75,10 +80,13 @@ class HashTable(metaclass=Singleton):
             self.table[address] = visitor
             return True
 
-    def get_record(self, passport):
+    # TODO 1- Решить как игде обрабатывать пустое место
+    # Получить запись из хэш таблицы по номеру паспорта
+    def get_record(self, passport) -> Optional[vs.Visitor]:
         return self.table[self.__find_record(passport)]
 
-    def __find_record(self, passport: str):
+    # Поиск записи по номеру паспорта в хэш-таблице
+    def __find_record(self, passport: str) -> Union[int, False]:
         address = self.__hash_func_first(passport)
         i = 0
 
@@ -93,37 +101,35 @@ class HashTable(metaclass=Singleton):
 
             i += 1
 
-    def del_record(self, passport: str) -> bool:
+    # Удаление записи из хэш-таблицы по номеру паспорта
+    def del_record(self, passport: str) -> Optional[False]:
         address = self.__find_record(passport)
 
         if address is False:
             return False
 
-        self.table[address] = Visitor.Visitor()
+        self.table[address] = vs.Visitor()
+        return
 
-    def find_fio(self, fio: str):
+    # TODO 2 - Доделать метод
+    # Поиск записей в хэш-таблице по ФИО
+    def find_fio(self, fio: str) -> List[vs.Visitor]:
         tmp = list()
 
         for visitor in self.table:
             if visitor.full_name == fio:
                 tmp.append(visitor)
 
-
-
-    def show_records(self):
+    # Вывести всю хэш-таблицу
+    def show_records(self) -> None:
         count = 0
-        print("*" * 70)
         for record in self.table:
             if record.passport != "":
-                print(f"Номер паспорта: {record.passport}\n ФИО: {record.full_name}\n Дата рождения: {record.date_born}\n"
-                      f"Место жительства: {record.address}\n Цель приезда: {record.goal}")
-                print("*" * 70)
-
+                record.show_visitor()
                 count += 1
 
         if count == 0:
             print("База постояльцев пуста!")
             print("*" * 70)
 
-    # def show_one_visitor(self, passport):
-    #     visitor =
+        return

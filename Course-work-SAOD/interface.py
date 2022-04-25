@@ -1,15 +1,16 @@
 from os import system
+from typing import Callable, Iterator, Union, Optional
 
 
 class MainMenuCLS:
     @staticmethod
-    def name_app():
+    def name_app() -> None:
         system("cls")
         print("*" * 70)
         print("Регистрация постояльцев в гостинице")
 
     @staticmethod
-    def main_menu():
+    def main_menu() -> int:
         options = (
                     "1) Зарегистрировать нового постояльца",
                     "2) Удаление данных о постояльце",
@@ -43,7 +44,7 @@ class MainMenuCLS:
 
 class AddNewVisitor:
     @staticmethod
-    def name_menu():
+    def name_menu() -> None:
         system("cls")
         print("*" * 70)
         print("Регистрация постояльцев в гостинице")

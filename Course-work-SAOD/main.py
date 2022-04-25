@@ -1,3 +1,5 @@
+from typing import Callable, Iterator, Union, Optional
+
 import interface as gui
 import check_funcs as check
 import hash_table_of_visitors as ht
@@ -6,7 +8,7 @@ import Visitor as vs
 from os import system
 
 
-def new_visitor(visitor_base):
+def new_visitor(visitor_base) -> None:
     gui.AddNewVisitor.name_menu()
     tmp = vs.Visitor()
 
@@ -71,7 +73,7 @@ def main():
             input("OK")
 
         elif option == 5:
-            tmp = visitor_base.get_visitor()
+            tmp = visitor_base.get_record()
         elif option == 6:
             pass
         elif option == 7:
