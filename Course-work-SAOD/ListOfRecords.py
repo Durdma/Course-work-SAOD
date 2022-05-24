@@ -53,6 +53,7 @@ class ListOfRecords(metaclass=Singleton):
 
         return
 
-
+    def __sort_records(self):
+        pass
 
 

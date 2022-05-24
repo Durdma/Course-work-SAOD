@@ -50,3 +50,11 @@ class AddNewVisitor:
         print("Регистрация постояльцев в гостинице")
         print("*" * 70)
 
+
+class AddNewRoom:
+    @staticmethod
+    def name_menu() -> None:
+        system("cls")
+        print("*" * 70)
+        print("Регистрация номеров в гостинице")
+        print("*" * 70)

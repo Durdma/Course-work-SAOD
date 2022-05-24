@@ -2,19 +2,14 @@ from typing import Callable, Iterator, Union, Optional, Tuple
 
 from re import match
 
-choice_output = Union[
-                        Callable[[], Optional[False]],
-                        Tuple[int, True]
-                     ]
 
-
-def choice(option, len_of_options) -> choice_output:
-    def _not_in_range() -> Optional[False]:
-        print("Введенное число не соответсвует ни одному из номеров действий!")
+def choice(option, len_of_options):
+    def _not_in_range() -> Optional[bool]:
+        print("Введенное число не соответствует ни одному из номеров действий!")
         print("Повторите ввод!")
         return None, False
 
-    def _not_int() -> Optional[False]:
+    def _not_int() -> Optional[bool]:
         print("Введенная строка не является числом! Повторите ввод!")
         print("Повторите ввод!")
         return None, False
@@ -77,3 +72,64 @@ def field_goal(goal) -> str:
                      "Повторите ввод цели приезда: ")
 
     return goal
+
+
+def field_number(number) -> str:
+    pattern = r"^[ЛПОМ][0-9][0-9][0-9]+$"
+
+    while match(pattern, number) is None:
+        number = input("Некорректный номер комнаты! Повторите ввод!"
+                       "Формат ввод БЦЦЦ: ")
+
+    return number
+
+
+def field_places(places) -> int:
+    while True:
+        try:
+            places = int(places)
+            if places <= 0:
+                print("Введенное число должно быть больше нуля! Повторите ввод!")
+                places = input("Введите количество мест: ")
+                continue
+            return places
+        except ValueError:
+            print("Некорректный ввод количества мест в номере! Повторите ввод")
+            places = input("Введите количество мест: ")
+
+
+def field_rooms(rooms) -> int:
+    while True:
+        try:
+            rooms = int(rooms)
+            if rooms <= 0:
+                print("Введенное число должно быть больше нуля! Повторите ввод!")
+                rooms = input("Введите количество комнат: ")
+                continue
+            return rooms
+        except ValueError:
+            print("Некорректный ввод количества комнат в номере! Повторите ввод")
+            rooms = input("Введите количество комнат: ")
+
+
+def field_bathroom(bath) -> bool:
+    while True:
+        if bath == "Есть":
+            return True
+        if bath == "Нет":
+            return False
+        if bath != "Есть" or bath != "Нет":
+            print("Введенное значение не соответствует ни одному из вариантов ответа!"
+                  "Повторите ввод!")
+            bath = input("Наличие санузла (Есть/Нет): ")
+
+
+def field_furniture(furn):
+    while len(furn) > 512:
+        furn = input("Количество символов превысило 512!"
+                     "Повторите ввод описания номера: ")
+
+    return furn
+
+
+

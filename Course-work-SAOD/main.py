@@ -4,8 +4,34 @@ import interface as gui
 import check_funcs as check
 import hash_table_of_visitors as ht
 import Visitor as vs
+import RoomTree as rt
+import Hotel_room as room
 
 from os import system
+
+
+def new_room(room_base) -> None:
+    gui.AddNewRoom.name_menu()
+    tmp = room.HotelRoom()
+
+    # TODO Облагородить приглашения к вводу
+    tmp.number = check.field_number(input("Введите номер комнаты в формате ХХХХ: "))
+    tmp.places = check.field_places(input("Введите количество мест: ")) # int
+    tmp.rooms = check.field_rooms(input("Введите количество комнат: ")) # int
+    tmp.bathroom = check.field_bathroom(input("Наличие санузла: ")) # bool
+    tmp.furniture = check.field_furniture(input("Введите описание номера: "))
+
+    if room_base.root is not None:
+        if room_base.root.find(tmp.number) is not None:
+            print("Апартаменты с таким номером уже есть в базе!")
+            return
+        else:
+            res = room_base.add_node(tmp)
+
+    else:
+        room_base.add_node(tmp)
+
+    input("OK")
 
 
 def new_visitor(visitor_base) -> None:
@@ -39,6 +65,7 @@ def new_visitor(visitor_base) -> None:
 
 def main():
     visitor_base = ht.HashTable()
+    room_base = rt.RoomTree()
 
     len_of_options = None
 
@@ -73,15 +100,30 @@ def main():
             input("OK")
 
         elif option == 5:
-            tmp = visitor_base.get_record()
+            tmp = visitor_base.get_record(check.field_passport(input("Введите номер паспорта в формате NNNN-NNNNNN,"
+                                                                     "где N - цифра: ")))
+            tmp.show_visitor()
+            input("OK")
         elif option == 6:
-            pass
+            tmp = visitor_base.find_fio(check.field_full_name(input("Введите полное ФИО: ")))
+
+            for visitor in tmp:
+                visitor.show_visitor()
+
+            input("OK")
+
         elif option == 7:
-            pass
+            new_room(room_base)
+            input("OK")
         elif option == 8:
-            pass
+            tmp = input("Номер для удаления: ")
+            room_base.delete_node(tmp)
+            room_base.show_tree()
+            input("OK")
         elif option == 9:
-            pass
+            room_base.show_table()
+            room_base.show_tree()
+            input("OK")
         elif option == 10:
             pass
         elif option == 11:

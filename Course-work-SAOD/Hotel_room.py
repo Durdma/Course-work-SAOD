@@ -8,10 +8,11 @@ class HotelRoom:
     rooms: int = 0
     bathroom: bool = False
     furniture: str = ""
+    living: int = 0
 
     def show_room(self) -> None:
         print("*" * 70)
-        print(f"Номер комнтаы: {self.number}")
+        print(f"Номер комнаты: {self.number}")
         print(f"Максимальное количество жильцов: {self.places}")
         print(f"Количество комнат: {self.rooms}")
 
@@ -21,4 +22,5 @@ class HotelRoom:
             print("Наличие санузла: Нет")
 
         print(f"Оборудование: {self.furniture}")
+        print(f"Проживает {self.living}")
         print("*" * 70)
