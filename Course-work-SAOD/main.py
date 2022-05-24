@@ -6,8 +6,23 @@ import hash_table_of_visitors as ht
 import Visitor as vs
 import RoomTree as rt
 import Hotel_room as room
+import Record as rec
+import ListOfRecords as lor
+
 
 from os import system
+
+
+def new_record(record_base) -> None:
+    tmp = rec.Record()
+
+    tmp.number = input("Введите номер комнаты: ")
+    tmp.passport = input("Введите номер паспорта: ")
+    tmp.registration_date = input("Введите дату заселения: ")
+    tmp.closing_date = input("Введите дату выселения: ")
+
+    record_base.add_record(tmp)
+    input("OK")
 
 
 def new_room(room_base) -> None:
@@ -66,6 +81,7 @@ def new_visitor(visitor_base) -> None:
 def main():
     visitor_base = ht.HashTable()
     room_base = rt.RoomTree()
+    record_base = lor.ListOfRecords()
 
     len_of_options = None
 
@@ -127,11 +143,25 @@ def main():
         elif option == 10:
             pass
         elif option == 11:
-            pass
+            tmp = input("Введите номер апартаментов: ")
+            if room_base.root is not None:
+                res = room_base.root.find(tmp)
+                if res is not None:
+                    res.table()
+                else:
+                    print("Апартаменты с таким номером не найдены.")
+            else:
+                print("База апартаментов пуста!")
+            input("OK")
         elif option == 12:
-            pass
+            tmp = input("Введите описание: ")
+            command = int(input("Полный поиск(1), частичный (0): "))
+            room_base.root.table_furniture(tmp, command)
+            input("OK")
         elif option == 13:
-            pass
+            new_record(record_base)
+            record_base.show_records()
+            input("OK")
         elif option == 14:
             pass
 

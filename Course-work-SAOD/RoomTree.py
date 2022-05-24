@@ -1,6 +1,7 @@
 from typing import Callable, Iterator, Union, Optional, List
 
 import Hotel_room as room
+import textAlgo as algo
 
 
 class Node(object):
@@ -29,6 +30,34 @@ class Node(object):
                 self.left_node.table()
             if self.right_node is not None:
                 self.right_node.table()
+
+    def table_furniture(self, pattern: str, command: int):
+        pattern = pattern.split(", ")
+        if self:
+            if self.node.number is not None:
+                self.__search_furniture(pattern, command)
+            if self.left_node is not None:
+                self.left_node.__search_furniture(pattern, command)
+            if self.right_node is not None:
+                self.right_node.__search_furniture(pattern, command)
+
+    def __search_furniture(self, pattern: list, command):
+        if command == 0:
+            for value in pattern:
+                res = algo.search(self.node.furniture, value)
+                if res is True:
+                    return self.node.show_room()
+
+        if command == 1:
+            counter = 0
+
+            for value in pattern:
+                res = algo.search(self.node.furniture, value)
+                if res is True:
+                    counter += 1
+
+            if counter == len(pattern):
+                return self.node.show_room()
 
     def find(self, key):
         res = None
