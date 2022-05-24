@@ -154,6 +154,8 @@ def main():
                 print("База апартаментов пуста!")
             input("OK")
         elif option == 12:
+            # TODO Настроить связи между всеми структурами
+            # TODO и доделать разные типы добавления записей
             tmp = input("Введите описание: ")
             command = int(input("Полный поиск(1), частичный (0): "))
             room_base.root.table_furniture(tmp, command)
