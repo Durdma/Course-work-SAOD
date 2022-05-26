@@ -22,6 +22,14 @@ class Node(object):
         right = self.right_node.height if self.right_node else 0
         self.height = max(left, right) + 1
 
+    def zero_living(self):
+        if self.node.number is not None:
+            self.node.living = 0
+        if self.left_node is not None:
+            self.left_node.zero_living()
+        if self.right_node is not None:
+            self.right_node.zero_living()
+
     def table(self):
         if self:
             if self.node.number is not None:
@@ -75,8 +83,7 @@ class Node(object):
                 if res is not None:
                     return res
 
-        else:
-            return False
+        return False
 
     def find_min(self):
         return self if not self.left_node else self.left_node.find_min()
@@ -156,6 +163,7 @@ class RoomTree(metaclass=Singleton):
 
     def clear_tree(self):
         self.root = None
+        print("База комнат очищена!")
         return self.root
 
     def show_tree(self):
@@ -166,7 +174,18 @@ class RoomTree(metaclass=Singleton):
         self.root.display()
 
     def show_table(self):
+        if self.root is None:
+            print("База номеров пуста!")
+            return
+
         self.root.table()
+
+    def zero_tree(self):
+        if self.root is None:
+            print("База номеров пуста!")
+            return
+
+        self.root.zero_living()
 
     # Внутренний метод добавления, если корень не пуст
     @staticmethod

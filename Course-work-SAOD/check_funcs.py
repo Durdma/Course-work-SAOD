@@ -3,6 +3,14 @@ from typing import Callable, Iterator, Union, Optional, Tuple
 from re import match
 
 
+import hash_table_of_visitors as ht
+import Visitor as vs
+import RoomTree as rt
+import Hotel_room as room
+import Record as rec
+import ListOfRecords as lor
+
+
 def choice(option, len_of_options):
     def _not_in_range() -> Optional[bool]:
         print("Введенное число не соответствует ни одному из номеров действий!")
@@ -52,7 +60,7 @@ def field_date_born(date_born) -> str:
               r"(?:0?[1-9]|1[0-2])-(?:19[0-9][0-9]|20[01][0-9]|20[2][012])(?!\d)$"
 
     while match(pattern, date_born) is None:
-        date_born = input("Некорректный ввод даты рождения! Повторите ввод!"
+        date_born = input("Некорректный ввод даты! Повторите ввод!"
                           "Формат ввода: ДД/ММ/ГГГГ: ")
 
     return date_born
@@ -131,5 +139,22 @@ def field_furniture(furn):
 
     return furn
 
+
+def field_number_check_in_out(number, room_base: rt.RoomTree):
+    res = field_number(number)
+    if room_base.root is not None:
+        if room_base.root.find(number) is not False:
+            return res
+
+    return False
+
+
+def field_passport_check_in_out(passport, visitor_base: ht.HashTable):
+    res = field_passport(passport)
+
+    if visitor_base.get_record(res) is not False:
+        return res
+
+    return False
 
 

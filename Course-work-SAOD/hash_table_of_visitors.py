@@ -84,7 +84,12 @@ class HashTable(metaclass=Singleton):
     # TODO 1- Решить как и где обрабатывать пустое место
     # Получить запись из хэш таблицы по номеру паспорта
     def get_record(self, passport) -> Optional[vs.Visitor]:
-        return self.table[self.__find_record(passport)]
+        res = self.__find_record(passport)
+
+        if res is False:
+            return False
+
+        return self.table[res]
 
     # Поиск записи по номеру паспорта в хэш-таблице
     def __find_record(self, passport: str) -> Union[int, bool]:

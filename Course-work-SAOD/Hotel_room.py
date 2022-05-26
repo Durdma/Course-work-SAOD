@@ -15,6 +15,7 @@ class HotelRoom:
         print(f"Номер комнаты: {self.number}")
         print(f"Максимальное количество жильцов: {self.places}")
         print(f"Количество комнат: {self.rooms}")
+        print(f"Проживает: {self.living}")
 
         if self.bathroom is True:
             print("Наличие санузла: Есть")
@@ -22,5 +23,4 @@ class HotelRoom:
             print("Наличие санузла: Нет")
 
         print(f"Оборудование: {self.furniture}")
-        print(f"Проживает {self.living}")
         print("*" * 70)

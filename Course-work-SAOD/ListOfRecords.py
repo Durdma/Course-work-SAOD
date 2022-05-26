@@ -1,12 +1,19 @@
 from typing import Callable, Iterator, Union, Optional
 import operator
+from collections import defaultdict
 
 import Record as rec
+import RoomTree as rt
+import Hotel_room as room
+import hash_table_of_visitors as ht
+import Visitor as vs
+
+T = Union[rec.Record, rec.CheckIn, rec.Closing]
 
 
 class Node:
-    def __init__(self, record: rec.Record = None):
-        self.node: rec.Record = record
+    def __init__(self, record: T = None):
+        self.node: T = record
         self.left_node: Node = None
         self.right_node: Node = None
 
@@ -26,8 +33,12 @@ class ListOfRecords(metaclass=Singleton):
     def __init__(self):
         self.head: Node = None
 
-    def add_record(self, record: rec.Record) -> None:
+    def add_record(self, record: T) -> None:
         if self.head is None:
+            self.head = Node(record)
+            return
+
+        if self.head.node is None:
             self.head = Node(record)
             return
 
@@ -40,6 +51,10 @@ class ListOfRecords(metaclass=Singleton):
         tmp.right_node = buff
         buff.left_node = tmp
         self.__sort_list()
+        return
+
+    def del_all(self):
+        self.head = None
         return
 
     def __sort_list(self):
@@ -106,6 +121,10 @@ class ListOfRecords(metaclass=Singleton):
             print("Список пуст!")
             return
 
+        if self.head.node is None:
+            print("Список пуст!")
+            return
+
         tmp = self.head
         tmp.node.show_record()
 
@@ -115,7 +134,135 @@ class ListOfRecords(metaclass=Singleton):
 
         return
 
-    def __sort_records(self):
-        pass
+    def add_record_in_out(self, record: T, room_base: rt.RoomTree):
+        if isinstance(record, rec.CheckIn):
+            if room_base.root.find(record.number).node.places \
+                    - room_base.root.find(record.number).node.living > 0:
+                room_base.root.find(record.number).node.living += 1
+                self.add_record(record)
+                return
+            else:
+                print(f"Добавление записи о заселении в апартаменты {record.number} невозможно!"
+                      "В номере нет свободных мест!")
+                return
+        elif isinstance(record, rec.Closing):
+            if room_base.root.find(record.number).node.living == 0:
+                print(f"Добавление записи о выселении из апартаментов {record.number} невозможно!"
+                      "Номер пуст!")
+                return
+            else:
+                room_base.root.find(record.number).node.living -= 1
+                self.add_record(record)
+                return
 
+    def del_record(self, passport, room_base: rt.RoomTree):
+        tmp = self.head
 
+        if self.head is None:
+            print("Удаление невозможно база записей пуста!")
+            return
+
+        if self.head.node.passport == passport:
+            self.head.node = self.head.right_node
+            self.head.left_node = None
+
+        while tmp.right_node is not None:
+            if tmp.right_node.node.passport == passport:
+                if isinstance(tmp.right_node.node, rec.CheckIn):
+                    room_base.root.find(tmp.right_node.node.number).node.living += 1
+                    if tmp.right_node.right_node is not None:
+                        tmp.right_node.right_node.left_node = tmp
+                        tmp.right_node = tmp.right_node.right_node
+                    else:
+                        tmp.right_node = None
+                if isinstance(tmp.right_node.node, rec.Closing):
+                    room_base.root.find(tmp.right_node.node.number).node.living -= 1
+                    if tmp.right_node.right_node is not None:
+                        tmp.right_node.right_node.left_node = tmp
+                        tmp.right_node = tmp.right_node.right_node
+                    else:
+                        tmp.right_node = None
+
+            tmp = tmp.right_node
+
+        return
+
+    def find_by_passport(self, passport):
+        if self.head is None:
+            print("Ничего не найдено")
+            return
+
+        if self.head.node is None:
+            print("Ничего не найдено")
+            return
+
+        buff = list()
+
+        if self.head.node.passport == passport:
+            buff.append(self.head.node.number)
+
+        tmp = self.head
+
+        while tmp.right_node is not None:
+            if tmp.right_node.node.passport == passport:
+                buff.append(tmp.right_node.node.number)
+
+            tmp = tmp.right_node
+
+        return buff
+
+    def del_by_number(self, number):
+        if self.head is None:
+            print("Ничего не найдено")
+            return
+
+        if self.head.node is None:
+            print("Ничего не найдено")
+            return
+
+        if self.head.node.number == number:
+            self.head.node = self.head.right_node
+            self.head.left_node = None
+
+        tmp = self.head
+
+        while tmp.right_node is not None:
+            if tmp.right_node.node.number == number:
+                if tmp.right_node.right_node is not None:
+                    tmp.right_node.right_node.left_node = tmp
+                    tmp.right_node = tmp.right_node.right_node
+                else:
+                    tmp.right_node = None
+
+        return
+
+    def find_by_number(self, number):
+        if self.head is None:
+            print("Ничего не найдено")
+            return
+
+        if self.head.node is None:
+            print("Ничего не найдено")
+            return
+
+        buff: list[T] = list()
+
+        if self.head.node.number == number:
+            buff.append(self.head.node)
+
+        tmp = self.head
+
+        while tmp.right_node is not None:
+            if tmp.right_node.node.number == number:
+                buff.append(tmp.right_node.node)
+            tmp = tmp.right_node
+
+        res = defaultdict(int)
+
+        for value in buff:
+            if isinstance(value, rec.CheckIn):
+                res[value.passport] += 1
+            if isinstance(value, rec.Closing):
+                res[value.passport] -= 1
+
+        return {value.passport for value in buff if res[value.passport] == 1}
