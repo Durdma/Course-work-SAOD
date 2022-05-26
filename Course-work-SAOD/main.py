@@ -275,7 +275,7 @@ def main():
 
         elif option == 6:
             gui.MainMenuCLS.name_menu(option)
-            tmp = visitor_base.find_fio(check.field_full_name(input("Введите полное ФИО: ")))
+            tmp = visitor_base.find_fio(check.field_full_name(input("Введите часть ФИО: ")))
 
             if len(tmp) != 0:
                 for visitor in tmp:

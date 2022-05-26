@@ -1,6 +1,7 @@
 from typing import Callable, Iterator, Union, Optional, List
 
 import Visitor as vs
+import textAlgo as algo
 
 
 # Singleton
@@ -125,7 +126,7 @@ class HashTable(metaclass=Singleton):
         tmp = list()
 
         for visitor in self.table:
-            if visitor.full_name == fio:
+            if algo.search(visitor.full_name, fio):
                 tmp.append(visitor)
 
         return tmp
