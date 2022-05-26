@@ -7,14 +7,63 @@ import Visitor as vs
 import RoomTree as rt
 import Hotel_room as room
 import Record as rec
-import ListOfRecords as lor
-
+import ListOfRecrods_v2 as lr2
 
 from os import system
 
 
-def del_visitor(record_base, room_base, visitor_base):
-    passport = check.field_passport_check_in_out(input("Введите номер паспорта: "), visitor_base)
+def find_visitor_by_passport(visitor_base, room_base) -> None:
+    visit = visitor_base.get_record(check.field_passport(input("Введите номер паспорта в формате NNNN-NNNNNN,"
+                                                               "где N - цифра: ")))
+    if visit is False:
+        print("Запись о постояльце с таким номером паспорта не найдена!")
+    else:
+        visit.show_visitor()
+        tmp = room_base.root.find_passport(visit.passport)
+
+        if tmp[0] is True:
+            if tmp[1] is None:
+                print("Нет зарегистрированных номеров на этот паспорт!")
+            else:
+                print("Зарегистрированные номера: ")
+                print(f"{tmp[1]}")
+
+        else:
+            print("Нет зарегистрированных номеров на этот паспорт!")
+
+
+def find_room_by_number(room_base, record_base, visitor_base) -> None:
+    number = check.field_number(input("Введите номер: "))
+
+    if room_base.root is None:
+        print("Ничего не найдено!")
+    else:
+        if room_base.root.find(number) is False:
+            print("Ничего не найдено!")
+        else:
+            res = room_base.root.find(number)
+            res.node.show_room()
+
+            buff = record_base.find_by_number(number)
+
+            if buff is not None:
+                buff = list(buff)
+                if len(buff) == 0:
+                    print("Ничего не найдено!")
+
+                else:
+                    for value in buff:
+                        if visitor_base.get_record(value) is not False:
+                            print(f"{value}    {visitor_base.get_record(value).full_name}")
+                        else:
+                            print("Ошибка при выводе, пустое поле в хэше!")
+            else:
+                print("Ничего не найдено!")
+
+
+def del_visitor(record_base, room_base, visitor_base) -> None:
+    passport = check.field_passport_check_in_out(input("Введите номер паспорта в формате NNNN-NNNNNN, где N - цифра: "),
+                                                 visitor_base)
     if passport is False:
         print("Постояльца с таким номером паспорта нет в базе!"
               "Запись невозможна!")
@@ -32,51 +81,112 @@ def new_record_check_in_out(room_base, visitor_base, record_base, command) -> No
     else:
         tmp = rec.Closing()
 
-    buff = check.field_number_check_in_out(input("Введите номер комнаты: "), room_base)
-    if buff is False:
-        print(f"Апартаментов с таким номером нет в базе!"
+    # number - number
+    number = check.field_number_check_in_out(input("Введите номер апартаментов в формате LNNN \n"
+                                                   "Где L может быть: \n"
+                                                   "Л - люкс апартаменты; \n"
+                                                   "П - полулюкс апартаменты; \n"
+                                                   "М - многоместные апартаменты; \n"
+                                                   "О - обычные апартаменты. \n"
+                                                   "NNN - номер от 000 до 999: "), room_base)
+    if number is False:
+        print(f"Апартаментов с таким номером нет в базе! \n"
               "Запись невозможна!")
         input("OK")
         return
     else:
-        tmp.number = buff
+        # комната существует
+        # passport - passport
+        passport = check.field_passport_check_in_out(input("Введите номер паспорта в формате NNNN-NNNNNN, где N - "
+                                                           "цифра: "), visitor_base)
 
-    buff = check.field_passport_check_in_out(input("Введите номер паспорта: "), visitor_base)
-    if buff is False:
-        print("Постояльца с таким номером паспорта нет в базе!"
-              "Запись невозможна!")
-        input("OK")
-        return
-    else:
-        tmp.passport = buff
-
-    if command == 0:
-        tmp.check_in_date = check.field_date_born(input("Введите дату заселения: "))
-    else:
-        tmp.closing_date = check.field_date_born(input("Введите дату выселения: "))
-
-    record_base.add_record_in_out(tmp, room_base)
+        if passport is False:
+            print("Постоялец с таким номером паспорта не зарегистрирован!")
+            input("OK")
+            return
+        else:
+            if command == 0:
+                res = room_base.root.find_passport(passport)
+                if res[0] is True:
+                    print(f"Постоялец с таким номером паспорта уже живет в номере {res[1]}")
+                    input("OK")
+                    return
+                else:
+                    # нигде не живет
+                    living = room_base.root.find_number_living(number)
+                    if living is not False:
+                        if len(living) >= room_base.root.find(number).node.places:
+                            print("Апартаменты заполнены! Заселение невозможно!")
+                            input("OK")
+                            return
+                        else:
+                            tmp.number = number
+                            tmp.passport = passport
+                            tmp.check_in_date = check.field_date_born(input("Введите дату заселения в формате "
+                                                                            "ДД-ММ-ГГГГ: "))
+                            room_base.root.update_living(passport, number, command)
+                            record_base.add_record(tmp)
+                            input("OK")
+                            return
+                    else:
+                        print("Непредвиденная ошибка!")
+                        input("OK")
+                        return
+            if command == 1:
+                if passport in room_base.root.find_number_living(number):
+                    tmp.number = number
+                    tmp.passport = passport
+                    tmp.closing_date = check.field_date_born(input("Введите дату выселения в формате ДД-ММ-ГГГГ: "))
+                    room_base.root.update_living(passport, number, command)
+                    record_base.add_record(tmp)
+                    input("OK")
+                    return
+                else:
+                    print(f"Постоялец с паспортным номером {passport} не проживает в номере {number}")
+                    input("OK")
+                    return
+    #
+    # number = check.field_passport_check_in_out(input("Введите номер паспорта: "), visitor_base)
+    # if number is False:
+    #     print("Постояльца с таким номером паспорта нет в базе!"
+    #           "Запись невозможна!")
+    #     input("OK")
+    #     return
+    # else:
+    #     tmp.passport = number
+    #
+    # if command == 0:
+    #     tmp.check_in_date = check.field_date_born(input("Введите дату заселения: "))
+    # else:
+    #     tmp.closing_date = check.field_date_born(input("Введите дату выселения: "))
+    #
+    # record_base.add_record_in_out(tmp, room_base)
     input("OK")
     return
 
 
 def new_room(room_base) -> None:
-    gui.AddNewRoom.name_menu()
     tmp = room.HotelRoom()
 
-    # TODO Облагородить приглашения к вводу
-    tmp.number = check.field_number(input("Введите номер комнаты в формате ХХХХ: "))
-    tmp.places = check.field_places(input("Введите количество мест: "))
-    tmp.rooms = check.field_rooms(input("Введите количество комнат: "))
-    tmp.bathroom = check.field_bathroom(input("Наличие санузла: "))
-    tmp.furniture = check.field_furniture(input("Введите описание номера: "))
+    tmp.number = check.field_number(input("Введите номер апартаментов в формате LNNN \n"
+                                          "Где L может быть: \n"
+                                          "Л - люкс апартаменты; \n"
+                                          "П - полулюкс апартаменты; \n"
+                                          "М - многоместные апартаменты; \n"
+                                          "О - обычные апартаменты. \n"
+                                          "NNN - номер от 000 до 999: "))
+    tmp.places = check.field_places(input("Введите количество мест в апартаментах: "))
+    tmp.rooms = check.field_rooms(input("Введите количество комнат в апартаментах: "))
+    tmp.bathroom = check.field_bathroom(input("Наличие санузла (Есть/Нет): "))
+    tmp.furniture = check.field_furniture(input("Заполните описание апартаментов \n"
+                                                "(перечислите через запятую, что есть в номере): "))
 
     if room_base.root is not None:
         if room_base.root.find(tmp.number) is not False:
             print("Апартаменты с таким номером уже есть в базе!")
             return
         else:
-            res = room_base.add_node(tmp)
+            room_base.add_node(tmp)
 
     else:
         room_base.add_node(tmp)
@@ -85,7 +195,6 @@ def new_room(room_base) -> None:
 
 
 def new_visitor(visitor_base) -> None:
-    gui.AddNewVisitor.name_menu()
     tmp = vs.Visitor()
 
     tmp.passport = check.field_passport(input("Введите номер паспорта в формате NNNN-NNNNNN,"
@@ -94,7 +203,7 @@ def new_visitor(visitor_base) -> None:
     tmp.full_name = check.field_full_name(input("Введите полное ФИО: "))
 
     tmp.date_born = check.field_date_born(input("Введите год рождения"
-                                                "Формат ввода: ДД/ММ/ГГГГ: "))
+                                                "Формат ввода: ДД-ММ-ГГГГ: "))
 
     tmp.address = check.field_address(input("Введите адрес проживания: "))
 
@@ -116,7 +225,7 @@ def new_visitor(visitor_base) -> None:
 def main():
     visitor_base = ht.HashTable()
     room_base = rt.RoomTree()
-    record_base = lor.ListOfRecords()
+    record_base = lr2.ListOfRecords()
 
     while True:
         fl = False
@@ -136,44 +245,36 @@ def main():
 
         if option == 0:
             break
+
         elif option == 1:
+            gui.MainMenuCLS.name_menu(option)
             new_visitor(visitor_base)
             input("OK")
+
         elif option == 2:
+            gui.MainMenuCLS.name_menu(option)
             del_visitor(record_base, room_base, visitor_base)
             input("OK")
+
         elif option == 3:
+            gui.MainMenuCLS.name_menu(option)
             visitor_base.show_records()
             input("OK")
+
         elif option == 4:
+            gui.MainMenuCLS.name_menu(option)
             visitor_base.empty_table()
             record_base.del_all()
             room_base.zero_tree()
             input("OK")
 
         elif option == 5:
-            visit = visitor_base.get_record(check.field_passport(input("Введите номер паспорта в формате NNNN-NNNNNN,"
-                                                                     "где N - цифра: ")))
-            if visit is False:
-                print("Запись о постояльце с таким номером паспорта не найдена!")
-            else:
-                visit.show_visitor()
-                tmp = record_base.find_by_passport(visit.passport)
-
-                if tmp is not None:
-
-                    if len(tmp) == 0:
-                        print("Нет зарегистрированных номеров на этот паспорт!")
-                    else:
-                        print("Зарегистрированные номера: ")
-                        for value in tmp:
-                            print(f"{value}")
-
-                else:
-                    print("Нет зарегистрированных номеров на этот паспорт!")
-
+            gui.MainMenuCLS.name_menu(option)
+            find_visitor_by_passport(visitor_base, room_base)
             input("OK")
+
         elif option == 6:
+            gui.MainMenuCLS.name_menu(option)
             tmp = visitor_base.find_fio(check.field_full_name(input("Введите полное ФИО: ")))
 
             if len(tmp) != 0:
@@ -184,49 +285,37 @@ def main():
             input("OK")
 
         elif option == 7:
+            gui.MainMenuCLS.name_menu(option)
             new_room(room_base)
             input("OK")
+
         elif option == 8:
+            gui.MainMenuCLS.name_menu(option)
             number = check.field_number_check_in_out(input("Номер для удаления: "), room_base)
             record_base.del_by_number(number)
             room_base.delete_node(number)
             room_base.show_tree()
             input("OK")
+
         elif option == 9:
+            gui.MainMenuCLS.name_menu(option)
             room_base.show_table()
             room_base.show_tree()
             input("OK")
+
         elif option == 10:
+            gui.MainMenuCLS.name_menu(option)
             room_base.clear_tree()
             record_base.del_all()
             input("OK")
-            # TODO ошибка после удаления не работает self.head.numer в листе
+
         elif option == 11:
-            number = check.field_number(input("Введите номер: "))
-
-            if room_base.root is None:
-                print("Ничего не найдено!")
-            else:
-                if room_base.root.find(number) is False:
-                    print("Ничего не найдено!")
-                else:
-                    res = room_base.root.find(number)
-                    res.node.show_room()
-
-                    buff = record_base.find_by_number(number)
-
-                    if buff is not None:
-                        buff = list(buff)
-                        if len(buff) == 0:
-                            print("Ничего не найдено!")
-
-                        else:
-                            for value in buff:
-                                print(f"{value}    {visitor_base.get_record(value).full_name}")
-                    else:
-                        print("Ничего не найдено!")
+            gui.MainMenuCLS.name_menu(option)
+            find_room_by_number(room_base, record_base, visitor_base)
             input("OK")
+
         elif option == 12:
+            gui.MainMenuCLS.name_menu(option)
             tmp = input("Введите описание: ")
             command = int(input("Полный поиск(1), частичный (0): "))
             if room_base.root is not None:
@@ -234,16 +323,21 @@ def main():
             else:
                 print("База комнат пуста!")
             input("OK")
-            # TODO добавление юзера с тем же паспортом в тот же номер без выезда, выезд тоже самое
+
         elif option == 13:
+            gui.MainMenuCLS.name_menu(option)
             new_record_check_in_out(room_base, visitor_base, record_base, 0)
             record_base.show_records()
             input("OK")
+
         elif option == 14:
+            gui.MainMenuCLS.name_menu(option)
             new_record_check_in_out(room_base, visitor_base, record_base, 1)
             record_base.show_records()
             input("OK")
+
         elif option == 15:
+            gui.MainMenuCLS.name_menu(option)
             record_base.show_records()
             input("OK")
 

@@ -3,6 +3,7 @@ from typing import Callable, Iterator, Union, Optional, List
 import Visitor as vs
 
 
+# Singleton
 class Singleton(type):
     _instances = {}
 
@@ -13,6 +14,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 
+# Хэш-таблица
 class HashTable(metaclass=Singleton):
 
     def __init__(self):
@@ -25,6 +27,7 @@ class HashTable(metaclass=Singleton):
 
         result = 0
 
+        # Преобразование символов в код
         def _get_code() -> List[int]:
             # NNNN - NNNNNN code of numbers in [48:58]
             to_key = list()
@@ -117,6 +120,7 @@ class HashTable(metaclass=Singleton):
         self.table[address] = vs.Visitor()
         return
 
+    # Поиск постояльцев по ФИО
     def find_fio(self, fio: str) -> List[vs.Visitor]:
         tmp = list()
 

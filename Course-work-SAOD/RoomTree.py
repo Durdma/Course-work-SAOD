@@ -30,6 +30,39 @@ class Node(object):
         if self.right_node is not None:
             self.right_node.zero_living()
 
+    def find_passport(self, passport):
+        if passport in self.node.living_set:
+            return True, self.node.number
+        if self.left_node is not None:
+            self.left_node.find_passport(passport)
+        if self.right_node is not None:
+            self.right_node.find_passport(passport)
+
+        return False, None
+
+    def update_living(self, passport, number, command):
+        if self.node.number == number:
+            if command == 0:
+                self.node.living_set.add(passport)
+                self.node.living = len(self.node.living_set)
+                return
+            if command == 1:
+                self.node.living_set.remove(passport)
+                self.node.living = len(self.node.living_set)
+                return
+        if self.left_node is not None:
+            self.update_living(passport, number, command)
+        if self.right_node is not None:
+            self.update_living(passport, number, command)
+
+    def find_number_living(self, number):
+        res = self.find(number)
+
+        if res is not False:
+            return res.node.living_set
+
+        return False
+
     def table(self):
         if self:
             if self.node.number is not None:
@@ -68,11 +101,10 @@ class Node(object):
                 return self.node.show_room()
 
     def find(self, key):
-        res = None
         if self.node is not None:
             if self.node.number == key:
                 res = self
-                print(f"Номер {res.node.number} найден!")
+                # print(f"Номер {res.node.number} найден!")
                 return res
             if self.left_node is not None:
                 res = self.left_node.find(key)
@@ -157,8 +189,10 @@ class RoomTree(metaclass=Singleton):
     def add_node(self, value: room.HotelRoom):
         if self.root is None:
             self.root = Node(value)
+            print("Апартаменты добавлены в базу!")
             return self.root
         else:
+            print("Апартаменты добавлены в базу!")
             return self.__restore_balance(self.__insert(self.root, value))
 
     def clear_tree(self):
@@ -175,7 +209,6 @@ class RoomTree(metaclass=Singleton):
 
     def show_table(self):
         if self.root is None:
-            print("База номеров пуста!")
             return
 
         self.root.table()

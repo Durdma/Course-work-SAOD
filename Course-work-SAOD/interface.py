@@ -1,5 +1,4 @@
 from os import system
-from typing import Callable, Iterator, Union, Optional
 
 
 class MainMenuCLS:
@@ -15,7 +14,7 @@ class MainMenuCLS:
                     "1) Зарегистрировать нового постояльца",
                     "2) Удаление данных о постояльце",
                     "3) Просмотреть всех зарегистрированных постояльцев",
-                    "4) Очистить данные о постояльцах",
+                    "4) Очистить базу данных постояльцев",
                     "5) Найти постояльца по номеру паспорта",
                     "6) Найти постояльца по ФИО",
                     "7) Добавить новый гостиничный номер",
@@ -42,20 +41,53 @@ class MainMenuCLS:
 
         return len(options)
 
-
-class AddNewVisitor:
     @staticmethod
-    def name_menu() -> None:
+    def name_menu(option):
         system("cls")
         print("*" * 70)
-        print("Регистрация постояльцев в гостинице")
-        print("*" * 70)
+        if option == 1:
+            print("Регистрация постояльцев в гостинице")
+            print("*" * 70)
+        elif option == 2:
+            print("Удаление постояльцев из системы")
+            print("*" * 70)
+        elif option == 3:
+            print("Просмотр информации о всех постояльцах")
+            print("*" * 70)
+        elif option == 4:
+            print("Удаление постояльцев из системы")
+            print("*" * 70)
+        elif option == 5:
+            print("Поиск информации о постояльце по номеру паспорта")
+            print("*" * 70)
+        elif option == 6:
+            print("Поиск постояльцев по ФИО")
+            print("*" * 70)
+        elif option == 7:
+            print("Регистрация апартаментов в гостинице")
+            print("*" * 70)
+        elif option == 8:
+            print("Удаление апартаментов из базы")
+            print("*" * 70)
+        elif option == 9:
+            print("Просмотр информации о всех апартаментах")
+            print("*" * 70)
+        elif option == 10:
+            print("Удаление всех апартаментов")
+            print("*" * 70)
+        elif option == 11:
+            print("Поиск апартаментов по номеру")
+            print("*" * 70)
+        elif option == 12:
+            print("Поиск апартаментов по описанию")
+            print("*" * 70)
+        elif option == 13:
+            print("Добавление новой записи о заселении")
+            print("*" * 70)
+        elif option == 14:
+            print("Добавление новой записи о выселении")
+            print("*" * 70)
+        elif option == 15:
+            print("Просмотр всех записей о заселении и выселении")
+            print("*" * 70)
 
-
-class AddNewRoom:
-    @staticmethod
-    def name_menu() -> None:
-        system("cls")
-        print("*" * 70)
-        print("Регистрация номеров в гостинице")
-        print("*" * 70)

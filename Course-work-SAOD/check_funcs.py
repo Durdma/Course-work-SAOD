@@ -2,16 +2,11 @@ from typing import Callable, Iterator, Union, Optional, Tuple
 
 from re import match
 
-
 import hash_table_of_visitors as ht
-import Visitor as vs
 import RoomTree as rt
-import Hotel_room as room
-import Record as rec
-import ListOfRecords as lor
 
 
-def choice(option, len_of_options):
+def choice(option, len_of_options) -> tuple:
     def _not_in_range() -> Optional[bool]:
         print("Введенное число не соответствует ни одному из номеров действий!")
         print("Повторите ввод!")
@@ -61,23 +56,29 @@ def field_date_born(date_born) -> str:
 
     while match(pattern, date_born) is None:
         date_born = input("Некорректный ввод даты! Повторите ввод!"
-                          "Формат ввода: ДД/ММ/ГГГГ: ")
+                          "Формат ввода: ДД-ММ-ГГГГ: ")
 
     return date_born
 
 
 def field_address(address) -> str:
-    while len(address) > 120:
-        address = input("Количество символов превысило 60! "
-                        "Повторите ввод адреса: ")
+    while len(address) > 120 or address == "":
+        if address == "":
+            address = input("Введите адрес проживания: ")
+        elif len(address) > 120:
+            address = input("Количество символов превысило 120! "
+                            "Повторите ввод адреса: ")
 
     return address
 
 
 def field_goal(goal) -> str:
-    while len(goal) > 255:
-        goal = input("Количество символов превысило 120!"
-                     "Повторите ввод цели приезда: ")
+    while len(goal) > 255 or goal == "":
+        if goal == "":
+            goal = input("Введите цель приезда: ")
+        elif len(goal) > 255:
+            goal = input("Количество символов превысило 255!"
+                         "Повторите ввод цели приезда: ")
 
     return goal
 
@@ -86,8 +87,13 @@ def field_number(number) -> str:
     pattern = r"^[ЛПОМ][0-9][0-9][0-9]+$"
 
     while match(pattern, number) is None:
-        number = input("Некорректный номер комнаты! Повторите ввод!"
-                       "Формат ввод БЦЦЦ: ")
+        number = input("Введите номер апартаментов в формате LNNN \n"
+                       "Где L может быть: \n"
+                       "Л - люкс апартаменты; \n"
+                       "П - полулюкс апартаменты; \n"
+                       "М - многоместные апартаменты; \n"
+                       "О - обычные апартаменты. \n"
+                       "NNN - номер от 000 до 999: ")
 
     return number
 
@@ -98,12 +104,12 @@ def field_places(places) -> int:
             places = int(places)
             if places <= 0:
                 print("Введенное число должно быть больше нуля! Повторите ввод!")
-                places = input("Введите количество мест: ")
+                places = input("Введите количество мест в апартаментах: ")
                 continue
             return places
         except ValueError:
-            print("Некорректный ввод количества мест в номере! Повторите ввод")
-            places = input("Введите количество мест: ")
+            print("Некорректный ввод количества мест в апартаментах! Повторите ввод")
+            places = input("Введите количество мест в апартаментах: ")
 
 
 def field_rooms(rooms) -> int:
@@ -112,12 +118,12 @@ def field_rooms(rooms) -> int:
             rooms = int(rooms)
             if rooms <= 0:
                 print("Введенное число должно быть больше нуля! Повторите ввод!")
-                rooms = input("Введите количество комнат: ")
+                rooms = input("Введите количество комнат в апартаментах: ")
                 continue
             return rooms
         except ValueError:
-            print("Некорректный ввод количества комнат в номере! Повторите ввод")
-            rooms = input("Введите количество комнат: ")
+            print("Некорректный ввод количества комнат в апартаментах! Повторите ввод")
+            rooms = input("Введите количество комнат в апартаментах: ")
 
 
 def field_bathroom(bath) -> bool:
@@ -132,10 +138,13 @@ def field_bathroom(bath) -> bool:
             bath = input("Наличие санузла (Есть/Нет): ")
 
 
-def field_furniture(furn):
-    while len(furn) > 512:
-        furn = input("Количество символов превысило 512!"
-                     "Повторите ввод описания номера: ")
+def field_furniture(furn) -> str:
+    while len(furn) > 512 or furn == "":
+        if len(furn) > 512:
+            furn = input("Количество символов превысило 512!"
+                         "Повторите ввод описания номера: ")
+        elif furn == "":
+            furn = input("Заполните описание апартаментов: ")
 
     return furn
 
@@ -156,5 +165,3 @@ def field_passport_check_in_out(passport, visitor_base: ht.HashTable):
         return res
 
     return False
-
-

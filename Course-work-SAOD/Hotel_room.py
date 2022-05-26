@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass
 
 
@@ -9,7 +10,9 @@ class HotelRoom:
     bathroom: bool = False
     furniture: str = ""
     living: int = 0
+    living_set: set = dataclasses.field(default_factory=set)
 
+    # Вывод информации об апартаментах
     def show_room(self) -> None:
         print("*" * 70)
         print(f"Номер комнаты: {self.number}")

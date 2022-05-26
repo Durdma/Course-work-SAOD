@@ -4,10 +4,11 @@ from collections import defaultdict
 
 import Record as rec
 import RoomTree as rt
-import Hotel_room as room
-import hash_table_of_visitors as ht
-import Visitor as vs
+# import Hotel_room as room
+# import hash_table_of_visitors as ht
+# import Visitor as vs
 
+# Кастомный тип для записей
 T = Union[rec.Record, rec.CheckIn, rec.Closing]
 
 
@@ -118,11 +119,11 @@ class ListOfRecords(metaclass=Singleton):
 
     def show_records(self) -> None:
         if self.head is None:
-            print("Список пуст!")
+            print("Список записей о заселении и выселении пуст!")
             return
 
         if self.head.node is None:
-            print("Список пуст!")
+            print("Список записей о заселении и выселении пуст!")
             return
 
         tmp = self.head
@@ -134,32 +135,11 @@ class ListOfRecords(metaclass=Singleton):
 
         return
 
-    def add_record_in_out(self, record: T, room_base: rt.RoomTree):
-        if isinstance(record, rec.CheckIn):
-            if room_base.root.find(record.number).node.places \
-                    - room_base.root.find(record.number).node.living > 0:
-                room_base.root.find(record.number).node.living += 1
-                self.add_record(record)
-                return
-            else:
-                print(f"Добавление записи о заселении в апартаменты {record.number} невозможно!"
-                      "В номере нет свободных мест!")
-                return
-        elif isinstance(record, rec.Closing):
-            if room_base.root.find(record.number).node.living == 0:
-                print(f"Добавление записи о выселении из апартаментов {record.number} невозможно!"
-                      "Номер пуст!")
-                return
-            else:
-                room_base.root.find(record.number).node.living -= 1
-                self.add_record(record)
-                return
-
     def del_record(self, passport, room_base: rt.RoomTree):
         tmp = self.head
 
         if self.head is None:
-            print("Удаление невозможно база записей пуста!")
+            print("Удаление невозможно список записей о заселении и выселении пуст!")
             return
 
         if self.head.node.passport == passport:
@@ -189,11 +169,11 @@ class ListOfRecords(metaclass=Singleton):
 
     def find_by_passport(self, passport):
         if self.head is None:
-            print("Ничего не найдено")
+            print("Список записей о заселении и выселении пуст!")
             return
 
         if self.head.node is None:
-            print("Ничего не найдено")
+            print("Список записей о заселении и выселении пуст!")
             return
 
         buff = list()
@@ -213,11 +193,11 @@ class ListOfRecords(metaclass=Singleton):
 
     def del_by_number(self, number):
         if self.head is None:
-            print("Ничего не найдено")
+            print("Удаление невозможно! Список записей о заселении и выселении пуст!")
             return
 
         if self.head.node is None:
-            print("Ничего не найдено")
+            print("Удаление невозможно! Список записей о заселении и выселении пуст!")
             return
 
         if self.head.node.number == number:
@@ -238,11 +218,11 @@ class ListOfRecords(metaclass=Singleton):
 
     def find_by_number(self, number):
         if self.head is None:
-            print("Ничего не найдено")
+            print("Список записей о заселении и выселении пуст!")
             return
 
         if self.head.node is None:
-            print("Ничего не найдено")
+            print("Список записей о заселении и выселении пуст!")
             return
 
         buff: list[T] = list()
