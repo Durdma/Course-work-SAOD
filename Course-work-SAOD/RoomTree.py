@@ -58,7 +58,7 @@ class Node(object):
     def find_number_living(self, number):
         res = self.find(number)
 
-        if res is not False:
+        if res is not None:
             return res.node.living_set
 
         return False
@@ -114,8 +114,6 @@ class Node(object):
                 res = self.right_node.find(key)
                 if res is not None:
                     return res
-
-        return False
 
     def find_min(self):
         return self if not self.left_node else self.left_node.find_min()
@@ -311,22 +309,36 @@ class RoomTree(metaclass=Singleton):
             return
 
         noda = self.root.find(key)
+        buff = Node()
+        buff.node = room.HotelRoom()
+        if noda is not None:
+            buff.node.number = noda.node.number
+            buff.node.living_set = noda.node.living_set
+            buff.node.living = noda.node.living
+            buff.node.rooms = noda.node.rooms
+            buff.node.furniture = noda.node.furniture
+            buff.node.bathroom = noda.node.bathroom
+            buff.node.places = noda.node.places
 
         if not noda:
             print(f"Ошибка, записи с значением {key} не существует!")
             return
 
         if noda.left_node and noda.right_node:
-            if noda.right_node.left_node is None:
-                tmp = noda.right_node
-                tmp.left_node = noda.left_node
-                tmp.parent = noda.parent
-
-                if noda.parent.left_node is noda:
-                    noda.parent.left_node = tmp
-                elif noda.parent.right_node is noda:
-                    noda.parent.right_node = tmp
-            return self.__restore_balance(tmp)
+            noda.node = noda.right_node.find_min().node
+            noda.right_node.find_min().node = buff.node
+            self.delete_node(key)
+            return
+            # if noda.right_node.left_node is None:
+            #     tmp = noda.right_node
+            #     tmp.left_node = noda.left_node
+            #     tmp.parent = noda.parent
+            #
+            #     if noda.parent.left_node is noda:
+            #         noda.parent.left_node = tmp
+            #     elif noda.parent.right_node is noda:
+            #         noda.parent.right_node = tmp
+            #     return self.__restore_balance(tmp)
 
         if not noda.left_node and not noda.right_node:
             children = None

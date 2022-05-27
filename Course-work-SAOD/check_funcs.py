@@ -152,7 +152,7 @@ def field_furniture(furn) -> str:
 def field_number_check_in_out(number, room_base: rt.RoomTree):
     res = field_number(number)
     if room_base.root is not None:
-        if room_base.root.find(number) is not False:
+        if room_base.root.find(number) is not None:
             return res
 
     return False

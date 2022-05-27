@@ -12,6 +12,61 @@ import ListOfRecrods_v2 as lr2
 from os import system
 
 
+def add_sample(visitor_base: ht.HashTable, room_base: rt.RoomTree):
+    visitors_passport = ("1234-567890",
+                         "4741-032682",
+                         "0308-638745",
+                         "5547-803620",
+                         "8361-877131")
+    visitors_name = ("Сизаск Максим Эдуардович",
+                     "Сизаск Эдуард Владимирович",
+                     "Гулов Георгий Владимирович",
+                     "Букин Максим Витальевич",
+                     "Баранов Владислав Сергеевич")
+    visitors_born = ("12-01-2000",
+                     "14-03-1954",
+                     "14-02-2002",
+                     "14-12-2001",
+                     "03-03-2002")
+    visitors_address = ("СПБ, Михайлова 12",
+                        "СПБ, Михайлова 12",
+                        "Ростов-на-Дону, Летчиков 87",
+                        "Екатеринбург, Металлургов 66",
+                        "СПБ, Первоапрельская 13")
+    visitors_goal = ("Отдых", "Работа", "Учеба", "Работа", "Учеба")
+
+    for passport, name, born, address, goal in zip(visitors_passport, visitors_name, visitors_born,
+                                                   visitors_address, visitors_goal):
+        tmp_visit = vs.Visitor()
+        tmp_visit.passport = passport
+        tmp_visit.full_name = name
+        tmp_visit.date_born = born
+        tmp_visit.address = address
+        tmp_visit.goal = goal
+
+        visitor_base.add_record(tmp_visit)
+
+    room_number = ("Л001", "П101", "М328", "О442", "Л213")
+    room_places = (2, 3, 12, 4, 3)
+    room_rooms = (3, 2, 1, 1, 2)
+    room_bathroom = (True, True, False, False, True)
+    room_furn = ("телевизор, холодильник, чайник, плита, душ",
+                 "телевизор, холодильник, чайник, душ",
+                 "холодильник, чайник",
+                 "телевизор, чайник",
+                 "телевизор, холодильник, душ")
+
+    for number, places, rooms, bath, furn in zip(room_number, room_places, room_rooms, room_bathroom, room_furn):
+        tmp_room = room.HotelRoom()
+        tmp_room.number = number
+        tmp_room.places = places
+        tmp_room.rooms = rooms
+        tmp_room.bathroom = bath
+        tmp_room.furniture = furn
+
+        room_base.add_node(tmp_room)
+
+
 def find_visitor_by_passport(visitor_base, room_base) -> None:
     visit = visitor_base.get_record(check.field_passport(input("Введите номер паспорта в формате NNNN-NNNNNN,"
                                                                "где N - цифра: ")))
@@ -39,7 +94,7 @@ def find_room_by_number(room_base, record_base, visitor_base) -> None:
     if room_base.root is None:
         print("Ничего не найдено!")
     else:
-        if room_base.root.find(number) is False:
+        if room_base.root.find(number) is None:
             print("Ничего не найдено!")
         else:
             res = room_base.root.find(number)
@@ -187,7 +242,7 @@ def new_room(room_base) -> None:
                                                 "(перечислите через запятую, что есть в номере): "))
 
     if room_base.root is not None:
-        if room_base.root.find(tmp.number) is not False:
+        if room_base.root.find(tmp.number) is not None:
             print("Апартаменты с таким номером уже есть в базе!")
             return
         else:
@@ -350,6 +405,10 @@ def main():
         elif option == 15:
             gui.MainMenuCLS.name_menu(option)
             record_base.show_records()
+            input("OK")
+
+        elif option == 16:
+            add_sample(visitor_base, room_base)
             input("OK")
 
 
