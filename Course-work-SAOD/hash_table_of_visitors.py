@@ -24,7 +24,7 @@ class HashTable(metaclass=Singleton):
     # Хэш функция №1
     @staticmethod
     def __hash_func_first(passport: str) -> int:
-        coefficients = (11, 13, 17, 19, 23, 29, 31, 37, 41, 43)
+        coefficients = (59, 61, 71, 73, 79, 83, 89, 97, 101, 103)
 
         result = 0
 
@@ -53,12 +53,13 @@ class HashTable(metaclass=Singleton):
         i = 1
 
         while hashfunc <= len(self.table):
-            hashfunc += 2 * i + 4 * i ** 2
+            hashfunc += i*11 + 3*i**2
 
-            if self.table[hashfunc].passport != "":
+            if self.table[hashfunc].passport != "" and self.table[hashfunc].passport != "Deleted":
                 i += 1
                 continue
 
+            print(f"Итераций {i}")
             return hashfunc
 
         return False
@@ -75,7 +76,7 @@ class HashTable(metaclass=Singleton):
 
         address = self.__hash_func_first(visitor.passport)
 
-        if self.table[address].passport != "":
+        if self.table[address].passport != "" and self.table[address] != "Deleted":
             address = self.__hash_func_second(address)
 
         if address is False:
@@ -101,7 +102,11 @@ class HashTable(metaclass=Singleton):
         i = 0
 
         while address < len(self.table):
-            address += 2 * i + 4 * i ** 2
+            address += i*11 + 3*i**2
+
+            if self.table[address].passport == "Deleted":
+                i += 1
+                continue
 
             if self.table[address].passport == "":
                 return False
@@ -118,7 +123,7 @@ class HashTable(metaclass=Singleton):
         if address is False:
             return False
 
-        self.table[address] = vs.Visitor()
+        self.table[address] = vs.Visitor("Deleted")
         return
 
     # Поиск постояльцев по ФИО
@@ -135,7 +140,7 @@ class HashTable(metaclass=Singleton):
     def show_records(self) -> None:
         count = 0
         for record in self.table:
-            if record.passport != "":
+            if record.passport != "" and record.passport != "Deleted":
                 record.show_visitor()
                 count += 1
 

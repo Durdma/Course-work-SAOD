@@ -19,17 +19,18 @@ def find_visitor_by_passport(visitor_base, room_base) -> None:
         print("Запись о постояльце с таким номером паспорта не найдена!")
     else:
         visit.show_visitor()
-        tmp = room_base.root.find_passport(visit.passport)
+        if room_base.root is not None:
+            tmp = room_base.root.find_passport(visit.passport)
 
-        if tmp[0] is True:
-            if tmp[1] is None:
-                print("Нет зарегистрированных номеров на этот паспорт!")
+            if tmp[0] is True:
+                if tmp[1] is None:
+                    print("Нет зарегистрированных номеров на этот паспорт!")
+                else:
+                    print("Зарегистрированные номера: ")
+                    print(f"Апартаменты {tmp[1]}")
+
             else:
-                print("Зарегистрированные номера: ")
-                print(f"{tmp[1]}")
-
-        else:
-            print("Нет зарегистрированных номеров на этот паспорт!")
+                print("Нет зарегистрированных номеров на этот паспорт!")
 
 
 def find_room_by_number(room_base, record_base, visitor_base) -> None:
@@ -52,9 +53,12 @@ def find_room_by_number(room_base, record_base, visitor_base) -> None:
                     print("Ничего не найдено!")
 
                 else:
+                    print("Проживающие постояльцы: ")
                     for value in buff:
+                        print("*" * 70)
                         if visitor_base.get_record(value) is not False:
                             print(f"{value}    {visitor_base.get_record(value).full_name}")
+                            print("*" * 70)
                         else:
                             print("Ошибка при выводе, пустое поле в хэше!")
             else:
@@ -70,7 +74,8 @@ def del_visitor(record_base, room_base, visitor_base) -> None:
         input("OK")
         return
     else:
-        record_base.del_record(passport, room_base)
+        if record_base.head is not None:
+            record_base.del_record(passport, room_base)
         visitor_base.del_record(passport)
         return
 
@@ -265,7 +270,8 @@ def main():
             gui.MainMenuCLS.name_menu(option)
             visitor_base.empty_table()
             record_base.del_all()
-            room_base.zero_tree()
+            if room_base.root is not None:
+                room_base.zero_tree()
             input("OK")
 
         elif option == 5:
@@ -278,8 +284,12 @@ def main():
             tmp = visitor_base.find_fio(check.field_full_name(input("Введите часть ФИО: ")))
 
             if len(tmp) != 0:
+                print("*" * 70)
+                print("Найденные постояльцы: ")
                 for visitor in tmp:
-                    visitor.show_visitor()
+                    print("*" * 70)
+                    print(f"{visitor.passport}  {visitor.full_name}")
+                    print("*" * 70)
             else:
                 print("Постояльцев с такими данными нет!")
             input("OK")
@@ -292,7 +302,8 @@ def main():
         elif option == 8:
             gui.MainMenuCLS.name_menu(option)
             number = check.field_number_check_in_out(input("Номер для удаления: "), room_base)
-            record_base.del_by_number(number)
+            if record_base.head is not None:
+                record_base.del_by_number(number)
             room_base.delete_node(number)
             room_base.show_tree()
             input("OK")
